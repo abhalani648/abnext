@@ -6,9 +6,50 @@ import { client } from '../lib/apollo';
 import { gql } from "@apollo/client";
 import parse from 'html-react-parser';
 
-export default function Home({ posts,pageData }) {
+export default function Home({ posts,pageData,Form }) {
 	//console.log(posts);
 	//console.log(pageData);
+	const stripHtml = (string) => string.replace(/(<([^>]+)>)/gi, "");
+	
+	const handleSubmit = async (event) => {
+		event.preventDefault();
+		
+		/*const data = {
+		  somebodysname: event.target.somebodys_name.value,
+		  any_email: event.target.any_email.value,
+		  before_space_age: event.target.before_space_age.value,
+		  optional_message: event.target.optional_message.value
+		}*/
+		const data = new FormData(event);
+
+
+		const JSONdata = JSON.stringify(data);
+		console.log(JSONdata);
+		/*/// API endpoint where we send form data.
+		const endpoint = 'https://cssformsrestapi.tastewp.com/wp-json/contact-form-7/v1/contact-forms/5/feedback'
+	 
+		// Form the request for sending data to the server.
+		const options = {
+		  // The method is POST because we are sending data.
+		  method: 'POST',
+		  // Tell the server we're sending JSON.
+		  headers: {
+			'Content-Type': 'application/json',
+		  },
+		  // Body of the request is the JSON data we created above.
+		  body: JSONdata,
+		}
+	 
+		// Send the form data to our forms API on Vercel and get a response.
+		const response = await fetch(endpoint, options)
+	 
+		// Get the response data from server as JSON.
+		// If server returns the name submitted, that means the form works.
+		const result = await response.json()
+		alert(`Is this your full name: ${result.data}`) */
+
+	}
+
 	
 	
 	
@@ -24,12 +65,44 @@ export default function Home({ posts,pageData }) {
 		
 		{parse(pageData.heading)}
         </h1>
-		
+		<form  onSubmit={handleSubmit} method="post" >
+
+
+                <div className="form-group">
+                    <label className="form-label" htmlFor="somebodys-name">Somebody's name</label>
+                    <input className="form-input" id="somebodys_name" type="text" name="somebodys-name" />
+                </div>
+
+                <div className="form-group">
+                    <label className="form-label" htmlFor="any-email">Any valid email address</label>
+                  
+                    <input className="form-input" id="any_email" type="text" name="any-email" />
+                </div>
+
+                <div className="form-group">
+                  
+                    <label className="form-label" htmlFor="before-space-age">A date before the Space Age</label>
+                    <input className="form-input col-8" id="before_space_age" type="date" placeholder="yyyy-mm-dd" name="before-space-age" />
+                </div>
+
+                <div className="form-group">
+                    <label className="form-label" htmlFor="optional-message">Optional message to the world</label>
+                    <textarea className="form-input" id="optional_message" name="optional-message"></textarea>
+                </div>
+
+              
+                <div className="form-group">
+                    <button type="submit" className="btn btn-primary">
+                        Submit
+                    </button>
+                </div>
+
+            </form>
         <p className="description">
           {pageData.description}
         </p>
 		
-		{parse(pageData.contactForm7)};
+		
 		
         <div className="grid">
           {
@@ -44,8 +117,11 @@ export default function Home({ posts,pageData }) {
 
       <Footer></Footer>
     </div>
+	
   )
 }
+
+
 
 export async function getStaticProps(){
 
@@ -98,6 +174,7 @@ export async function getStaticProps(){
   // data we want to pass into the HomePage
   const posts = response?.data?.posts?.nodes;  
   const pageData = response2?.data?.page?.homeDetails?.sliderDetails; 
+  
   
   return {
     props: {
